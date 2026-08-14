@@ -34,9 +34,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 
-  /* прячем ссылку "Войти" в доке шапки и в мобильном меню */
+  /* прячем ссылку "Войти" в доке шапки и в мобильном меню, подставляем профиль */
   if (loginDockLink) loginDockLink.style.display = 'none';
-  if (mobileLoginLink) mobileLoginLink.style.display = 'none';
+
+  if (mobileLoginLink) {
+    mobileLoginLink.href = '/profile.html';
+    mobileLoginLink.innerHTML = `<span>06</span>${escapeHtml(displayName)}`;
+    mobileLoginLink.style.display = '';
+
+    /* добавляем пункт "Выйти" сразу под профилем в мобильном меню */
+    const mobileLogout = document.createElement('a');
+    mobileLogout.href = '#';
+    mobileLogout.id = 'mobileLogoutLink';
+    mobileLogout.innerHTML = `<span>07</span>Выйти`;
+    mobileLoginLink.insertAdjacentElement('afterend', mobileLogout);
+
+    mobileLogout.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      } catch (err) { /* уводим в любом случае */ }
+      location.href = '/index.html';
+    });
+  }
+
 
   /* ---------- собираем DOM плашки ---------- */
   const chip = document.createElement('div');
