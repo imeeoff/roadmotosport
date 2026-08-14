@@ -83,6 +83,39 @@
   transform:translateY(-5px) scale(1.14);
 }
 
+/* =========================================================
+   Мобильная версия дока — вместо бургер-меню тот же магнитный
+   док, но закреплён плавающей панелью внизу экрана (как в iOS).
+========================================================= */
 @media (max-width:860px){
-  .nav-dock{ display:none; }
+  .nav-dock{
+    display:flex;
+    position:fixed;
+    left:50%;
+    bottom:max(16px, env(safe-area-inset-bottom));
+    transform:translateX(-50%);
+    z-index:120;
+    gap:8px;
+    padding:8px 10px 12px;
+    background:rgba(10,10,12,.82);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--line-soft);
+    border-radius:22px;
+    box-shadow:0 20px 46px -18px rgba(0,0,0,.75);
+  }
+
+  .dock-item{
+    width:38px;
+    height:38px;
+  }
+
+  /* На мобильном чип-подсказку не показываем — тач без hover ей не нужен */
+  .dock-tip{ display:none; }
+}
+
+@media (max-width:400px){
+  .nav-dock{ gap:6px; padding:7px 8px 10px; }
+  .dock-item{ width:34px; height:34px; }
+  .dock-item svg{ width:17px; height:17px; }
 }
