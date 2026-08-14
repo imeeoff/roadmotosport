@@ -2,11 +2,10 @@
    MOTOSPORT — auth.js
    Логика страницы входа/регистрации.
 
-   ВАЖНО: здесь реализована только клиентская часть —
-   валидация, UI-состояния и имитация запроса (setTimeout).
-   Реальную проверку логина/пароля, создание пользователя и
-   отправку кода подтверждения нужно подключить к своему
-   бэкенду (замените блоки "// TODO: запрос к серверу").
+   Подключён к реальному бэкенду:
+   /api/auth/register.js, /api/auth/login.js,
+   /api/auth/me.js, /api/auth/logout.js
+   Сессия хранится в httpOnly-cookie (не в localStorage).
 ========================================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -33,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const switchModeBtn = document.getElementById('switchModeBtn');
 
   let mode = 'login'; // 'login' | 'signup'
-  let step = 'details'; // 'details' | 'verification'
+  let pendingEmail = ''; // email, ожидающий подтверждения после регистрации
 
   /* ---------- Переключение шагов (форм) ---------- */
   function showStep(el) {
@@ -205,21 +204,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setLoading(detailsSubmit, true, detailsSubmitText);
 
-    // TODO: запрос к серверу — POST /api/auth/login или /api/auth/register
-    setTimeout(() => {
-      setLoading(detailsSubmit, false, detailsSubmitText);
+    const email = document.getElementById('email').value.trim();
+    const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
+    const payload = mode === 'login'
+      ? {
+          email,
+          password: document.getElementById('password').value,
+        }
+      : {
+          name: document.getElementById('name').value.trim(),
+          email,
+          password: document.getElementById('password').value,
+          phone: document.getElementById('phone').value.trim(),
+        };
 
-      if (mode === 'login') {
-        const remember = document.getElementById('rememberMe').checked;
-        if (remember) localStorage.setItem('userEmail', document.getElementById('email').value);
-        showStatus(detailsStatus, 'Вход выполнен успешно.', 'ok');
-      } else {
-        // переходим к подтверждению email
-        document.getElementById('verifyEmailLabel').textContent = document.getElementById('email').value;
-        bottomSwitch.style.display = 'none';
-        showStep(verifyForm);
-      }
-    }, 900);
+    fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    })
+      .then(r => r.json().then(data => ({ status: r.status, data })))
+      .then(({ status, data }) => {
+        setLoading(detailsSubmit, false, detailsSubmitText);
+
+        if (!data || !data.ok) {
+          showStatus(detailsStatus, (data && data.error) || 'Не удалось выполнить запрос. Попробуйте ещё раз.', 'err');
+          return;
+        }
+
+        if (mode === 'login') {
+          showStatus(detailsStatus, 'Вход выполнен успешно.', 'ok');
+          setTimeout(() => { location.href = '/index.html'; }, 700);
+        } else {
+          // Регистрация прошла успешно — сессия уже установлена бэкендом.
+          // Показываем шаг с кодом как декоративный (без реальной email-верификации)
+          // и сразу переводим пользователя в личный кабинет.
+          pendingEmail = email;
+          document.getElementById('verifyEmailLabel').textContent = pendingEmail;
+          bottomSwitch.style.display = 'none';
+          showStep(verifyForm);
+        }
+      })
+      .catch(() => {
+        setLoading(detailsSubmit, false, detailsSubmitText);
+        showStatus(detailsStatus, 'Сервер недоступен. Попробуйте позже.', 'err');
+      });
   });
 
   function setLoading(btn, loading, textEl) {
@@ -245,15 +275,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('resetSubmit');
     btn.disabled = true;
 
-    // TODO: запрос к серверу — POST /api/auth/reset-password
+    // TODO: реализовать /api/auth/reset-password (требует email-провайдера
+    // для отправки ссылки — например, Resend, SendGrid или Telegram-бот,
+    // как уже используется в collect.js/webhook.js).
     setTimeout(() => {
       btn.disabled = false;
-      showStatus(resetStatus, 'Ссылка для сброса пароля отправлена на почту.', 'ok');
+      showStatus(resetStatus, 'Если такой email зарегистрирован — на него отправлена ссылка.', 'ok');
       setTimeout(() => setMode('login'), 1800);
     }, 800);
   });
 
-  /* ---------- Submit: код подтверждения ---------- */
+  /* ---------- Submit: код подтверждения ----------
+     Пока не подключена реальная email-верификация — этот шаг
+     декоративный и просто завершает регистрацию (сессия уже
+     установлена бэкендом при регистрации). Когда подключите
+     email-провайдера, замените блок ниже на fetch к
+     /api/auth/verify-email. */
   const verifyStatus = document.getElementById('verifyStatus');
   const codeInput = document.getElementById('verificationCode');
   codeInput.addEventListener('input', () => {
@@ -270,24 +307,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('verifySubmit');
     btn.disabled = true;
 
-    // TODO: запрос к серверу — POST /api/auth/verify-email
     setTimeout(() => {
       btn.disabled = false;
       loginSignupWrap.style.display = 'none';
       completeStep.classList.add('active');
-    }, 800);
+    }, 600);
   });
 
   document.getElementById('backToDetails').addEventListener('click', () => {
     showStep(detailsForm);
   });
-
-  /* ---------- Подставить сохранённый email ---------- */
-  const savedEmail = localStorage.getItem('userEmail');
-  if (savedEmail) {
-    document.getElementById('email').value = savedEmail;
-    document.getElementById('rememberMe').checked = true;
-  }
 
   setMode('login');
 });

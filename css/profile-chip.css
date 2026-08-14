@@ -1,0 +1,166 @@
+/* =========================================================
+   MOTOSPORT — profile-chip.css
+   Плашка профиля пользователя в шапке (замена ссылки "Войти"
+   после успешной авторизации). Подключать ПОСЛЕ auth.css.
+========================================================= */
+
+.profile-chip{
+  position:relative;
+  display:none; /* показывается через JS, когда есть активная сессия */
+  align-items:center;
+  gap:10px;
+  padding:7px 14px 7px 7px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  cursor:pointer;
+  background:var(--bg-panel);
+  transition:border-color .3s, background .3s;
+  user-select:none;
+}
+.profile-chip:hover,
+.profile-chip.open{
+  border-color:var(--accent);
+}
+
+.profile-chip-avatar{
+  width:30px; height:30px;
+  border-radius:50%;
+  background-image:linear-gradient(140deg, var(--accent), color-mix(in oklab, var(--accent) 55%, black));
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-display);
+  font-size:13px;
+  flex-shrink:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.profile-chip-name{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:.04em;
+  color:var(--text-primary);
+  max-width:130px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.profile-chip-caret{
+  color:var(--text-tertiary);
+  display:flex;
+  transition:transform .3s var(--ease);
+  flex-shrink:0;
+}
+.profile-chip.open .profile-chip-caret{
+  transform:rotate(180deg);
+  color:var(--accent);
+}
+
+/* ---------- Выпадающая плашка ---------- */
+.profile-dropdown{
+  position:absolute;
+  top:calc(100% + 14px);
+  right:0;
+  width:270px;
+  background:var(--bg-panel);
+  border:1px solid var(--line-soft);
+  border-radius:var(--radius-m);
+  padding:18px;
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(-10px) scale(.98);
+  transform-origin:top right;
+  transition:opacity .3s var(--ease), transform .3s var(--ease), visibility .3s;
+  z-index:150;
+  box-shadow:0 26px 54px -18px rgba(0,0,0,.75);
+}
+.profile-dropdown.open{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0) scale(1);
+}
+
+.profile-dropdown-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--line-soft);
+  margin-bottom:12px;
+}
+.profile-dropdown-head .profile-chip-avatar{
+  width:44px; height:44px;
+  font-size:17px;
+}
+.profile-dropdown-name{
+  font-family:var(--font-display);
+  font-size:16px;
+  text-transform:uppercase;
+  line-height:1.25;
+  word-break:break-word;
+}
+.profile-dropdown-email{
+  font-family:var(--font-mono);
+  font-size:11.5px;
+  color:var(--text-tertiary);
+  margin-top:3px;
+  word-break:break-all;
+}
+
+.profile-dropdown nav{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.profile-dropdown a,
+.profile-dropdown button{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  width:100%;
+  padding:11px 10px;
+  border-radius:var(--radius-s);
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  background:none;
+  border:none;
+  text-align:left;
+  transition:background .25s, color .25s;
+}
+.profile-dropdown a svg,
+.profile-dropdown button svg{
+  width:16px; height:16px;
+  flex-shrink:0;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+}
+.profile-dropdown a:hover,
+.profile-dropdown button:hover{
+  background:var(--bg-surface);
+  color:var(--text-primary);
+}
+
+.profile-dropdown-divider{
+  height:1px;
+  background:var(--line-soft);
+  margin:8px 0;
+}
+
+.profile-dropdown .logout-btn{
+  color:var(--accent);
+}
+.profile-dropdown .logout-btn:hover{
+  background:var(--accent-glow);
+  color:#ffb3ac;
+}
+
+/* На мобильных дропдаун в шапке скрываем — там своя мобильная навигация */
+@media (max-width:860px){
+  .profile-chip{ display:none !important; }
+}
