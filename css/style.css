@@ -984,7 +984,6 @@ h1,h2,h3,h4{
   .nav-links{ display:none; }
   .burger{ display:none; }
   .mobile-nav{ display:none !important; }
-  body{ padding-bottom:78px; }
   .hero .container{ grid-template-columns:1fr; }
   .hero-visual{ order:-1; }
   .hero-stats{ grid-template-columns:repeat(2,1fr); row-gap:0; }
