@@ -6,6 +6,18 @@
    из-за чего соседние иконки каскадом реагируют на курсор,
    плюс подхватываемый пружиной чип-подпись и keyboard-parity
    (фокус с клавиатуры выгибает поле так же, как курсор).
+
+   ФИКС (мобильное меню "уезжает"/не держится внизу экрана):
+   .nav-dock лежит внутри .site-header, а у .site-header.scrolled
+   есть backdrop-filter. По спецификации CSS backdrop-filter
+   (как и filter/transform) создаёт новый containing block для
+   position:fixed потомков — из-за этого при скролле мобильный
+   док переставал быть зафиксирован относительно экрана и вёл
+   себя как fixed относительно самого хедера.
+   Решение: на мобильной ширине переносим DOM-узел дока прямо
+   в <body> (без хедера с backdrop-filter над ним), а при
+   возврате к десктопной ширине — кладём обратно в исходное
+   место в разметке. Внешний вид и стили дока не меняются.
 ========================================================= */
 (function () {
   const dock = document.querySelector('.nav-dock');
@@ -19,6 +31,25 @@
   items.forEach((el) => {
     if (el.getAttribute('href') === currentPage) el.classList.add('active');
   });
+
+  /* ---------- перенос дока в <body> на мобильной ширине ---------- */
+  const dockOriginalParent = dock.parentNode;
+  const dockOriginalNextSibling = dock.nextSibling;
+  const mqlMobile = window.matchMedia('(max-width:860px)');
+
+  function placeDockForViewport() {
+    if (mqlMobile.matches) {
+      if (dock.parentNode !== document.body) {
+        document.body.appendChild(dock);
+      }
+    } else {
+      if (dock.parentNode !== dockOriginalParent) {
+        dockOriginalParent.insertBefore(dock, dockOriginalNextSibling);
+      }
+    }
+  }
+  placeDockForViewport();
+  mqlMobile.addEventListener('change', placeDockForViewport);
 
   const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
 
