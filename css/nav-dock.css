@@ -85,16 +85,15 @@
 
 /* =========================================================
    Мобильная версия дока — вместо бургер-меню тот же магнитный
-   док, закреплён у верхнего края экрана, чуть ниже шапки —
-   чтобы не перекрывать чип профиля и кнопку "Забронировать".
+   док, закреплён внизу экрана и остаётся там при прокрутке.
 ========================================================= */
 @media (max-width:860px){
   .nav-dock{
     display:flex;
     position:fixed;
     left:50%;
-    top:96px;
-    bottom:auto;
+    top:auto;
+    bottom:max(16px, env(safe-area-inset-bottom));
     transform:translateX(-50%);
     z-index:120;
     gap:12px;
@@ -121,7 +120,7 @@
 }
 
 @media (max-width:400px){
-  .nav-dock{ top:90px; gap:9px; padding:9px 12px 12px; }
+  .nav-dock{ gap:9px; padding:9px 12px 12px; }
   .dock-item{ width:39px; height:39px; }
   .dock-item svg{ width:19px; height:19px; }
 }
