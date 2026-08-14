@@ -1,0 +1,20 @@
+/* =========================================================
+   MOTOSPORT — kinetic-grid.css
+   Полноэкранный интерактивный canvas-фон (порт компонента
+   KineticGrid на ванильный JS), заменяет particle-wave.
+   Подключать ПОСЛЕ style.css
+========================================================= */
+
+.kinetic-grid-canvas{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  display:block;
+  pointer-events:none; /* не мешает кликам по контенту сайта */
+  z-index:0;            /* под всем контентом (у section z-index:1) */
+}
+
+@media (prefers-reduced-motion: reduce){
+  .kinetic-grid-canvas{ display:none; }
+}

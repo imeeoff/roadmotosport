@@ -6,10 +6,12 @@
 <title>О нас — MotoSport</title>
 <meta name="description" content="MotoSport — команда энтузиастов мотоспорта. История компании, ценности и подход к аренде и продаже спортивных мотоциклов.">
 <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/particle-wave.css">
+<link rel="stylesheet" href="css/kinetic-grid.css">
 <link rel="stylesheet" href="css/nav-dock.css">
 </head>
 <body>
+
+<canvas id="kinetic-grid" class="kinetic-grid-canvas"></canvas>
 
 <div class="scroll-progress"></div>
 
@@ -53,7 +55,6 @@
 </div>
 
 <section class="page-hero">
-  <canvas id="particle-wave" class="particle-wave-canvas"></canvas>
   <div class="container">
     <div class="breadcrumb"><a href="/главная">Главная</a> <span class="accent">/</span> О нас</div>
     <div class="eyebrow">С 2019 года на треке</div>
@@ -243,8 +244,7 @@
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-<script src="js/particle-wave.js"></script>
+<script src="js/kinetic-grid.js"></script>
 <script src="js/script.js"></script>
 <script src="js/nav-dock.js"></script>
 </body>
