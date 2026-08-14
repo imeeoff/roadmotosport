@@ -1,0 +1,404 @@
+/* =========================================================
+   MOTOSPORT — profile.css
+   Личный кабинет. Использует токены style.css (карбон + гоночный
+   красный), развивает мотив приборной панели (.gauges) в
+   формат "гаража" — статус райдера, парк на руках, история
+   заездов/аренд. Подключать ПОСЛЕ style.css / auth.css.
+========================================================= */
+
+/* ---------- Плавное появление после загрузки данных сессии ---------- */
+#profileRoot{
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .5s var(--ease), transform .5s var(--ease);
+}
+#profileRoot.ready{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ---------- Хиро кабинета ---------- */
+.profile-hero{
+  padding:170px 0 60px;
+  position:relative;
+  border-bottom:1px solid var(--line-soft);
+}
+.profile-hero .container{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:28px;
+}
+
+.profile-avatar-big{
+  width:84px; height:84px;
+  border-radius:50%;
+  background-image:linear-gradient(140deg, var(--accent), color-mix(in oklab, var(--accent) 55%, black));
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display);
+  font-size:34px;
+  flex-shrink:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 18px 40px -16px var(--accent-glow);
+}
+
+.profile-hero-id{ min-width:0; }
+.profile-hero-name{
+  font-size:clamp(26px,3.4vw,38px);
+  text-transform:uppercase;
+  line-height:1.1;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.profile-hero-email{
+  margin-top:8px;
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--text-tertiary);
+  letter-spacing:.02em;
+}
+
+.rider-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:5px 12px 5px 9px;
+  border:1px solid var(--accent);
+  border-radius:999px;
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--accent);
+  white-space:nowrap;
+}
+.rider-badge svg{ width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2.4; }
+
+.profile-hero-actions{ display:flex; gap:14px; flex-shrink:0; }
+
+@media (max-width:700px){
+  .profile-hero .container{ grid-template-columns:1fr; text-align:center; }
+  .profile-hero-name{ justify-content:center; }
+  .profile-hero-actions{ justify-content:center; }
+}
+
+/* ---------- Телеметрия райдера (переиспользует мотив .gauges) ---------- */
+.telemetry{
+  padding:64px 0;
+  border-bottom:1px solid var(--line-soft);
+  background:var(--bg-surface);
+}
+.telemetry-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  background:var(--line-soft);
+  border:1px solid var(--line-soft);
+  border-radius:var(--radius-m);
+  overflow:hidden;
+}
+.telemetry-item{
+  background:var(--bg-surface);
+  padding:28px 24px;
+  text-align:center;
+}
+.telemetry-num{
+  font-family:var(--font-display);
+  font-size:clamp(26px,3vw,36px);
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:3px;
+}
+.telemetry-num small{ font-size:15px; color:var(--accent); }
+.telemetry-label{
+  margin-top:8px;
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-tertiary);
+}
+@media (max-width:700px){
+  .telemetry-grid{ grid-template-columns:repeat(2,1fr); }
+}
+
+/* ---------- Компоновка кабинета ---------- */
+.profile-layout{
+  padding:90px 0 130px;
+  display:grid;
+  grid-template-columns:260px 1fr;
+  gap:56px;
+  align-items:start;
+}
+
+/* боковое меню разделов */
+.profile-nav{
+  position:sticky;
+  top:110px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.profile-nav button{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+  padding:13px 16px;
+  border-radius:var(--radius-s);
+  background:none;
+  border:1px solid transparent;
+  color:var(--text-secondary);
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  text-align:left;
+  transition:background .25s, color .25s, border-color .25s;
+}
+.profile-nav button svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; flex-shrink:0; }
+.profile-nav button:hover{ color:var(--text-primary); background:var(--bg-panel); }
+.profile-nav button.active{
+  color:var(--text-primary);
+  background:var(--bg-panel);
+  border-color:var(--line-soft);
+}
+.profile-nav button.active::before{
+  content:'';
+  width:3px; height:16px;
+  background:var(--accent);
+  border-radius:2px;
+  margin-right:-4px;
+}
+.profile-nav .logout-btn{ margin-top:18px; color:var(--accent); }
+.profile-nav .logout-btn:hover{ background:var(--accent-glow); }
+
+@media (max-width:960px){
+  .profile-layout{ grid-template-columns:1fr; }
+  .profile-nav{
+    position:static;
+    flex-direction:row;
+    overflow-x:auto;
+    gap:8px;
+    padding-bottom:6px;
+  }
+  .profile-nav button{ white-space:nowrap; }
+  .profile-nav .logout-btn{ margin-top:0; }
+}
+
+/* панели разделов */
+.profile-panel{ display:none; }
+.profile-panel.active{
+  display:block;
+  animation:panelFade .45s var(--ease);
+}
+@keyframes panelFade{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+.panel-head{ margin-bottom:34px; }
+.panel-head h2{ font-size:clamp(24px,3vw,32px); text-transform:uppercase; }
+.panel-head p{ margin-top:10px; color:var(--text-secondary); font-size:14.5px; max-width:520px; }
+
+/* ---------- Карточка-форма (переиспользует .form-card из auth) ---------- */
+.settings-card{
+  background:var(--bg-panel);
+  border:1px solid var(--line-soft);
+  border-radius:var(--radius-l);
+  padding:36px;
+  margin-bottom:24px;
+}
+.settings-card h3{
+  font-size:15px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin-bottom:22px;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--line-soft);
+}
+.settings-card .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+@media (max-width:600px){ .settings-card .field-row{ grid-template-columns:1fr; } }
+
+.settings-card .field{ margin-bottom:20px; }
+.settings-card .field:last-of-type{ margin-bottom:0; }
+.settings-card .field label{
+  display:block;
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-tertiary);
+  margin-bottom:10px;
+}
+.settings-card .field input{
+  width:100%;
+  background:var(--bg-surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-s);
+  padding:14px 16px;
+  color:var(--text-primary);
+  font-size:14.5px;
+  transition:border-color .3s, box-shadow .3s, opacity .3s;
+}
+.settings-card .field input:focus{
+  outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow);
+}
+.settings-card .field input:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+.settings-card .field-hint{
+  margin-top:8px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--text-tertiary);
+}
+
+.settings-actions{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-top:26px;
+  flex-wrap:wrap;
+}
+.settings-status{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  opacity:0;
+  transform:translateY(4px);
+  transition:opacity .35s var(--ease), transform .35s var(--ease);
+}
+.settings-status.show{ opacity:1; transform:translateY(0); }
+.settings-status.ok{ color:#8fd6a8; }
+.settings-status.err{ color:var(--accent); }
+
+.danger-card{ border-color:rgba(232,56,44,.28); }
+.danger-card h3{ color:var(--accent); border-bottom-color:rgba(232,56,44,.2); }
+.danger-card p{ color:var(--text-secondary); font-size:14px; margin-bottom:20px; }
+.btn-danger{
+  background:transparent;
+  border:1px solid var(--accent);
+  color:var(--accent);
+}
+.btn-danger:hover{ background:var(--accent-glow); }
+
+/* ---------- История аренд (переиспользует .bike-card мотив) ---------- */
+.booking-list{ display:flex; flex-direction:column; gap:16px; }
+.booking-row{
+  display:grid;
+  grid-template-columns:64px 1fr auto auto;
+  align-items:center;
+  gap:20px;
+  background:var(--bg-panel);
+  border:1px solid var(--line-soft);
+  border-radius:var(--radius-m);
+  padding:18px 22px;
+  transition:border-color .3s, transform .3s var(--ease);
+}
+.booking-row:hover{ border-color:var(--line); transform:translateY(-3px); }
+.booking-thumb{
+  width:64px; height:64px;
+  border-radius:var(--radius-s);
+  overflow:hidden;
+  border:1px solid var(--line-soft);
+  flex-shrink:0;
+}
+.booking-thumb img{ width:100%; height:100%; object-fit:cover; filter:grayscale(.3); }
+.booking-info .booking-bike{ font-family:var(--font-display); font-size:17px; text-transform:uppercase; }
+.booking-info .booking-meta{
+  margin-top:5px;
+  font-family:var(--font-mono);
+  font-size:11.5px;
+  color:var(--text-tertiary);
+  letter-spacing:.04em;
+}
+.booking-price{ font-family:var(--font-display); font-size:17px; text-align:right; white-space:nowrap; }
+.booking-status{
+  font-family:var(--font-mono);
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:6px 12px;
+  border-radius:999px;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+.booking-status.done{ color:#8fd6a8; border-color:rgba(143,214,168,.3); background:rgba(143,214,168,.08); }
+.booking-status.upcoming{ color:var(--accent); border-color:rgba(232,56,44,.3); background:var(--accent-glow); }
+
+@media (max-width:640px){
+  .booking-row{ grid-template-columns:52px 1fr; grid-template-rows:auto auto; row-gap:10px; }
+  .booking-thumb{ width:52px; height:52px; grid-row:1 / 3; }
+  .booking-price{ text-align:left; }
+}
+
+/* ---------- Пустое состояние ---------- */
+.empty-state{
+  text-align:center;
+  padding:60px 30px;
+  background:var(--bg-panel);
+  border:1px dashed var(--line);
+  border-radius:var(--radius-l);
+}
+.empty-state svg{
+  width:40px; height:40px;
+  color:var(--text-tertiary);
+  stroke:currentColor; fill:none; stroke-width:1.6;
+  margin-bottom:16px;
+}
+.empty-state h4{ font-size:17px; text-transform:uppercase; }
+.empty-state p{ margin-top:8px; color:var(--text-secondary); font-size:14px; max-width:340px; margin-left:auto; margin-right:auto; }
+.empty-state .btn{ margin-top:22px; }
+
+/* ---------- Гараж (избранные модели, мотив .bike-card) ---------- */
+.garage-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+  gap:22px;
+}
+.garage-card{
+  background:var(--bg-panel);
+  border:1px solid var(--line-soft);
+  border-radius:var(--radius-m);
+  overflow:hidden;
+  transition:transform .4s var(--ease), border-color .3s;
+}
+.garage-card:hover{ transform:translateY(-6px); border-color:var(--line); }
+.garage-media{ position:relative; aspect-ratio:16/10; overflow:hidden; }
+.garage-media img{ width:100%; height:100%; object-fit:cover; filter:grayscale(.35); transition:transform .7s var(--ease), filter .4s; }
+.garage-card:hover .garage-media img{ transform:scale(1.08); filter:grayscale(0); }
+.garage-unfav{
+  position:absolute; top:12px; right:12px;
+  width:34px; height:34px;
+  border-radius:50%;
+  background:rgba(10,10,12,.75);
+  backdrop-filter:blur(6px);
+  border:1px solid var(--line);
+  color:var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  transition:background .3s;
+}
+.garage-unfav:hover{ background:var(--accent); color:#fff; }
+.garage-unfav svg{ width:15px; height:15px; stroke:currentColor; fill:currentColor; }
+.garage-body{ padding:18px 20px; }
+.garage-brand{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); }
+.garage-name{ font-size:18px; margin-top:6px; }
+.garage-price{ margin-top:10px; font-family:var(--font-mono); font-size:12px; color:var(--text-tertiary); }
+
+/* ---------- Активность (переиспользует .timeline) ---------- */
+.activity-list{ display:flex; flex-direction:column; }
+.activity-item{
+  display:grid;
+  grid-template-columns:100px 1fr;
+  gap:24px;
+  padding:20px 0;
+  border-bottom:1px solid var(--line-soft);
+}
+.activity-item:last-child{ border-bottom:none; }
+.activity-date{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-tertiary); padding-top:2px; }
+.activity-text{ font-size:14.5px; color:var(--text-secondary); }
+.activity-text strong{ color:var(--text-primary); font-weight:600; }
